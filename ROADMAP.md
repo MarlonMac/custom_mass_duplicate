@@ -20,6 +20,9 @@ Versión base estable que permite la duplicación masiva de productos y sus rela
 
 El objetivo de esta versión es resolver las limitaciones conocidas de la v1.0.0 y añadir soporte para escenarios empresariales más complejos.
 
+* **Optimizar la carga de los productos:**
+    * Al cargar un lote grande de productos el servidor excede el tiempo de ejecución y la operación no se completa. Debemos optimizar la carga (quizás por lotes) para asegurar que la carga se complete.
+
 * **Investigación y Soporte para Productos Opcionales:**
     * Analizar la causa raíz del conflicto de base de datos con el campo `optional_product_ids`.
     * Implementar una solución que permita la duplicación de este campo de forma segura, compatible con los módulos de eCommerce de Odoo.
