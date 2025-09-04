@@ -7,6 +7,11 @@ class ProductDuplicateWizard(models.TransientModel):
 
     target_company_id = fields.Many2one('res.company', string='Target Company', required=True)
     target_website_id = fields.Many2one('website', string='Target Website', required=True, domain="[('company_id', '=', target_company_id)]")
+    copy_cost = fields.Boolean(
+        string="Copy Cost Price", 
+        default=False,
+        help="If checked, the cost price ('standard_price') of the products will be copied and converted to the target company's currency. Leave unchecked to set the cost to 0."
+    )
 
     def action_duplicate_products(self):
         """Ahora esta acción solo crea un job y lo pone en la cola."""
@@ -17,6 +22,7 @@ class ProductDuplicateWizard(models.TransientModel):
             'target_company_id': self.target_company_id.id,
             'target_website_id': self.target_website_id.id,
             'user_id': self.env.user.id,
+            'copy_cost': self.copy_cost, # <-- PASAMOS EL NUEVO VALOR
         })
 
         return {

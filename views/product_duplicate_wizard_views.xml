@@ -9,6 +9,7 @@
                 <group>
                     <field name="target_company_id"/>
                     <field name="target_website_id"/>
+                    <field name="copy_cost"/>
                 </group>
                 <footer>
                     <button name="action_duplicate_products" string="Duplicate" type="object" class="btn-primary"/>

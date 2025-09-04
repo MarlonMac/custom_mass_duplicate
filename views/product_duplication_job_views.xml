@@ -25,10 +25,14 @@
                 <sheet>
                     <h1><field name="name"/></h1>
                     <group>
-                        <field name="state"/>
-                        <field name="user_id"/>
-                        <field name="target_company_id"/>
-                        <field name="target_website_id"/>
+                        <group>
+                            <field name="state"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group>
+                            <field name="target_company_id"/>
+                            <field name="target_website_id"/>
+                            <field name="copy_cost"/> </group>
                     </group>
                     <notebook>
                         <page string="Products">

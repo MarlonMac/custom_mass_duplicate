@@ -7,6 +7,14 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ---
+## [2.1.0] - 2025-09-04
+
+### Added
+- **Soporte Multi-Moneda**: El job de duplicación ahora detecta si la compañía de origen y destino tienen monedas diferentes. Si es así, convierte automáticamente los campos `list_price` y `standard_price` usando las tasas de cambio configuradas en Odoo.
+- **Dependencia de Contabilidad**: Se añadió `account` a las dependencias del módulo para acceder a los modelos de moneda.
+- **Manejo de Errores Mejorado**: Si no se encuentra una tasa de cambio, el job fallará con un mensaje claro en el log, indicando al usuario que debe configurar la tasa.
+
+---
 ## [2.0.0] - 2025-09-04
 
 ### Added
