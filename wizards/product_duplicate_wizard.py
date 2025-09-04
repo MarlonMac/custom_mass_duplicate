@@ -9,86 +9,88 @@ class ProductDuplicateWizard(models.TransientModel):
     _name = 'product.duplicate.wizard'
     _description = 'Wizard to Mass Duplicate Products to a Company'
 
-    # ... (los campos del wizard no cambian)
     target_company_id = fields.Many2one('res.company', string='Target Company', required=True)
     target_website_id = fields.Many2one('website', string='Target Website', required=True, domain="[('company_id', '=', target_company_id)]")
-
-    def _get_target_template_ids(self, original_templates, id_map):
-        """
-        Finds the corresponding target templates.
-        First, it checks the map of newly created products.
-        If not found, it falls back to searching by default_code.
-        """
-        target_ids = []
-        ProductTemplate = self.env['product.template'].sudo()
-        
-        for original_tmpl in original_templates:
-            # Prioridad 1: Buscar en el mapa de productos recién creados en este lote
-            if original_tmpl.id in id_map:
-                target_ids.append(id_map[original_tmpl.id])
-            # Prioridad 2: Buscar por referencia interna si no estaba en el lote
-            elif original_tmpl.default_code:
-                # Nota: Buscamos product.template directamente por default_code
-                target_tmpl = ProductTemplate.search([
-                    ('default_code', '=', original_tmpl.default_code),
-                    ('company_id', '=', self.target_company_id.id),
-                ], limit=1)
-                if target_tmpl:
-                    target_ids.append(target_tmpl.id)
-        return target_ids
 
     def action_duplicate_products(self):
         original_templates = self.env['product.template'].browse(self.env.context.get('active_ids', []))
         if not original_templates:
             raise UserError(_("You must select at least one product to duplicate."))
 
-        # --- PASADA 1: CREAR TODOS LOS PRODUCTOS Y CONSTRUIR UN MAPA DE IDs ---
-        id_map = {} # Mapa de {original_tmpl_id: new_tmpl_id}
-        new_templates_to_process = self.env['product.template']
+        # --- PASADA 1: CREAR TODOS LOS PRODUCTOS Y CONSTRUIR MAPAS DE IDs ---
+        template_id_map = {} # Mapa de {original_tmpl_id: new_tmpl_id}
+        variant_id_map = {}  # Mapa de {original_variant_id: new_variant_id}
 
         for template in original_templates:
             default_values = {
                 'company_id': self.target_company_id.id,
                 'website_id': self.target_website_id.id,
-                # Limpiamos las relaciones para llenarlas en la Pasada 2
                 'accessory_product_ids': [(5, 0, 0)],
                 'alternative_product_ids': [(5, 0, 0)],
                 'optional_product_ids': [(5, 0, 0)],
             }
             new_template = template.sudo().copy(default_values)
-            id_map[template.id] = new_template.id
-            new_templates_to_process |= new_template
+            template_id_map[template.id] = new_template.id
 
-            # Corregir la referencia interna de las variantes sigue siendo importante aquí
-            # ... (código de corrección de default_code)
+            # Mapear variantes y corregir sus default_code
+            if len(template.product_variant_ids) == len(new_template.product_variant_ids):
+                for i, original_variant in enumerate(template.product_variant_ids):
+                    new_variant = new_template.product_variant_ids[i]
+                    variant_id_map[original_variant.id] = new_variant.id
+                    
+                    # Corregir default_code
+                    existing = self.env['product.product'].sudo().search([
+                        ('default_code', '=', original_variant.default_code),
+                        ('company_id', '=', self.target_company_id.id),
+                        ('id', '!=', new_variant.id)
+                    ], limit=1)
+                    
+                    if not existing and original_variant.default_code:
+                        new_variant.sudo().write({'default_code': original_variant.default_code})
 
-        _logger.info(f"Pasada 1 completada. {len(id_map)} productos creados.")
+        _logger.info(f"Pasada 1 completada. {len(template_id_map)} productos y {len(variant_id_map)} variantes mapeadas.")
 
-        # --- PASADA 2: RECONSTRUIR LAS RELACIONES USANDO EL MAPA ---
+        # --- PASADA 2: RECONSTRUIR LAS RELACIONES ---
+        ProductProduct = self.env['product.product'].sudo()
+        ProductTemplate = self.env['product.template'].sudo()
+
         for original_template in original_templates:
-            new_template = self.env['product.template'].sudo().browse(id_map[original_template.id])
-            
-            # Mapear productos accesorios
-            if original_template.accessory_product_ids:
-                target_accessory_ids = self._get_target_template_ids(original_template.accessory_product_ids, id_map)
-                if target_accessory_ids:
-                    new_template.write({'accessory_product_ids': [(6, 0, target_accessory_ids)]})
+            new_template = ProductTemplate.browse(template_id_map.get(original_template.id))
+            if not new_template:
+                continue
 
-            # Mapear productos alternativos
+            # --- Mapeo de Productos Alternativos (product.template -> product.template) ---
             if original_template.alternative_product_ids:
-                target_alternative_ids = self._get_target_template_ids(original_template.alternative_product_ids, id_map)
+                target_alternative_ids = []
+                for alt_tmpl in original_template.alternative_product_ids:
+                    if alt_tmpl.id in template_id_map:
+                        target_alternative_ids.append(template_id_map[alt_tmpl.id])
+                    else:
+                        # Fallback a buscar por referencia del template (si existe)
+                        if alt_tmpl.default_code:
+                            found = ProductTemplate.search([('default_code', '=', alt_tmpl.default_code), ('company_id', '=', self.target_company_id.id)], limit=1)
+                            if found:
+                                target_alternative_ids.append(found.id)
                 if target_alternative_ids:
                     new_template.write({'alternative_product_ids': [(6, 0, target_alternative_ids)]})
 
-            # Mapear productos opcionales
-            if original_template.optional_product_ids:
-                # Los opcionales son product.product, manejamos la lógica un poco diferente
-                target_optional_ids = self._get_target_template_ids(original_template.optional_product_ids.mapped('product_tmpl_id'), id_map)
-                if target_optional_ids:
-                    # Necesitamos los product.product, no los templates
-                    final_variants = self.env['product.template'].browse(target_optional_ids).mapped('product_variant_id')
-                    new_template.write({'optional_product_ids': [(6, 0, final_variants.ids)]})
+            # --- Mapeo de Accesorios y Opcionales (product.template -> product.product) ---
+            m2m_variant_fields = ['accessory_product_ids', 'optional_product_ids']
+            for field_name in m2m_variant_fields:
+                if original_template[field_name]:
+                    target_variant_ids = []
+                    for original_variant in original_template[field_name]:
+                        if original_variant.id in variant_id_map:
+                            target_variant_ids.append(variant_id_map[original_variant.id])
+                        else:
+                            # Fallback a buscar por referencia interna de la variante
+                            if original_variant.default_code:
+                                found = ProductProduct.search([('default_code', '=', original_variant.default_code), ('company_id', '=', self.target_company_id.id)], limit=1)
+                                if found:
+                                    target_variant_ids.append(found.id)
+                    if target_variant_ids:
+                        new_template.write({field_name: [(6, 0, target_variant_ids)]})
 
-        _logger.info(f"Pasada 2 completada. Relaciones reconstruidas.")
+        _logger.info("Pasada 2 completada. Relaciones reconstruidas.")
 
         return {'type': 'ir.actions.act_window_close'}
