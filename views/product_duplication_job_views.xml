@@ -32,7 +32,15 @@
                     </group>
                     <notebook>
                         <page string="Products">
-                            <field name="product_template_ids"/>
+                            <field name="product_template_ids">
+                                <tree create="false" edit="false" delete="false">
+                                    <field name="name"/>
+                                    <field name="default_code"/>
+                                    <field name="categ_id"/>
+                                    <field name="list_price"/>
+                                    <field name="standard_price"/>
+                                </tree>
+                            </field>
                         </page>
                         <page string="Error Log" attrs="{'invisible': [('error_log', '=', False)]}">
                             <field name="error_log" readonly="1"/>

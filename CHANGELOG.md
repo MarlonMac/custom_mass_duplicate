@@ -1,28 +1,36 @@
 # Changelog
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
-
-El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-y este proyecto se adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
-
 ## [Unreleased]
 
 ---
+## [2.0.0] - 2025-09-04
 
+### Added
+- **Procesamiento Asíncrono**: Se implementó un sistema de cola de trabajos (`product.duplication.job`) para manejar duplicaciones masivas en segundo plano, evitando timeouts del servidor.
+- **Monitor de Trabajos**: Nueva vista en `Inventario > Operaciones > Duplication Jobs` para ver el estado de las duplicaciones.
+- **Tarea Programada (Cron)**: Se añadió un cron que se ejecuta cada minuto para procesar los trabajos pendientes.
+- **Acción para Re-encolar**: Los trabajos fallidos ahora pueden ser re-encolados para un nuevo intento desde la vista del job.
+- **Vista de Lista Personalizada**: La lista de productos dentro del job ahora es simplificada y no muestra columnas de stock para evitar confusiones.
+
+### Changed
+- **Cambio Arquitectónico (MAJOR)**: El proceso de duplicación pasa de ser síncrono (bloqueante) a asíncrono (en segundo plano). El asistente ahora solo crea un job en lugar de realizar el trabajo directamente.
+
+---
 ## [1.0.0] - 2025-09-04
 
 ### Added
-- **Creación Inicial del Módulo:** Estructura de archivos y wizard para la duplicación masiva.
-- **Lógica de Dos Pasadas:** Se crea primero los productos y luego se reconstruyen las relaciones para mayor estabilidad.
-- **Seguridad:** Creado el grupo de permisos "Gestor de Duplicación de Productos" para controlar el acceso a la acción.
-- **Notificaciones:** Se muestra un mensaje de éxito al usuario al finalizar el proceso.
+- Creación Inicial del Módulo y wizard para la duplicación masiva.
+- Lógica de Dos Pasadas para reconstruir relaciones de forma estable.
+- Grupo de permisos "Gestor de Duplicación de Productos" para controlar el acceso.
 
 ### Fixed
-- Resueltos errores de permisos multi-empresa utilizando `sudo()` de forma controlada.
-- Corregido `KeyError` al manejar incorrectamente los modelos `product.template` y `product.product`.
-- Solucionados errores de restricción de base de datos al adoptar el método `copy_data()` + `create()` para la creación de registros.
+- Resueltos errores de permisos multi-empresa utilizando `sudo()`.
+- Corregido `KeyError` al manejar los modelos `product.template` y `product.product`.
+- Solucionados errores de restricción de BD usando el método `copy_data()` + `create()`.
 
 ### Changed
-- **Workaround para Productos Opcionales:** Se deshabilita la duplicación de `optional_product_ids` para evitar errores de base de datos y garantizar la funcionalidad del módulo. El log y la notificación al usuario informan de esta omisión.
+- **Workaround para Productos Opcionales**: Se deshabilitó la duplicación de `optional_product_ids` para garantizar la funcionalidad.

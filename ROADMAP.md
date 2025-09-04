@@ -3,38 +3,32 @@
 Este documento describe la dirección futura y las características planificadas para el módulo.
 
 ---
-
-## Versión 1.0.0 - Lanzamiento Inicial
+## Versión 2.0.0 - Arquitectura Asíncrona
 **Estado:** Liberado ✔️
 
-Versión base estable que permite la duplicación masiva de productos y sus relaciones principales entre compañías.
+Re-arquitectura completa del módulo para soportar grandes volúmenes de datos sin timeouts, mediante un sistema de trabajos en segundo plano.
 
-* **Funcionalidad Principal:** Duplicación de productos con imágenes, variantes, accesorios y alternativos.
-* **Seguridad:** Acceso restringido por grupo de permisos.
-* **Workaround Implementado:** Omite la duplicación de "Productos Opcionales" para garantizar la estabilidad.
+* **Funcionalidad Principal:** Duplicación asíncrona con cola de trabajos y monitor de estado.
+* **Workaround Implementado:** Sigue omitiendo la duplicación de "Productos Opcionales".
 
 ---
-
-## Versión 1.1.0 - Soporte Extendido
+## Versión 2.1.0 - Soporte Multi-Moneda y UX
 **Estado:** Planificado 📝
 
-El objetivo de esta versión es resolver las limitaciones conocidas de la v1.0.0 y añadir soporte para escenarios empresariales más complejos.
+El objetivo de esta versión será robustecer el módulo para escenarios de negocio más complejos y mejorar la experiencia de usuario durante el procesamiento de los jobs.
 
-* **Optimizar la carga de los productos:**
-    * Al cargar un lote grande de productos el servidor excede el tiempo de ejecución y la operación no se completa. Debemos optimizar la carga (quizás por lotes) para asegurar que la carga se complete.
-
-* **Investigación y Soporte para Productos Opcionales:**
-    * Analizar la causa raíz del conflicto de base de datos con el campo `optional_product_ids`.
-    * Implementar una solución que permita la duplicación de este campo de forma segura, compatible con los módulos de eCommerce de Odoo.
-
-* **Soporte Multi-Moneda:**
+* **PRIORIDAD: Soporte Multi-Moneda:**
     * Detectar si la compañía de origen y destino usan diferentes monedas.
     * Si las monedas son diferentes, buscar el tipo de cambio configurado en Odoo.
     * Convertir los campos de precio (Precio de Venta, Coste, etc.) a la nueva moneda durante la duplicación.
 
----
+* **Mejoras de UX para Jobs:**
+    * **Barra de Progreso:** Investigar e implementar un indicador visual en el formulario del job que muestre el progreso (ej. "Procesando producto 45 de 450").
+    * **Botón de Cancelación:** Añadir una opción para que un administrador pueda detener un job que esté `Pendiente` o `En Progreso`.
 
+---
 ## Futuras Mejoras (Sin Versión Asignada)
 **Estado:** Ideas 💡
 
-* **Asistente de Evaluación de Conflictos:** Implementar un modo "dry run" que analice los productos a duplicar y presente un resumen de posibles conflictos (referencias internas duplicadas, enlaces que se perderán) antes de ejecutar la duplicación.
+* **Soporte para Productos Opcionales:** Analizar la causa raíz del conflicto de base de datos con el campo `optional_product_ids` e implementar una solución compatible.
+* **Asistente de Evaluación de Conflictos:** Implementar un modo "dry run" que analice los productos y presente un resumen de posibles conflictos antes de ejecutar la duplicación.
