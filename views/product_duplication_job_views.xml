@@ -28,11 +28,14 @@
                         <group>
                             <field name="state"/>
                             <field name="user_id"/>
+                            <field name="copy_cost"/>
                         </group>
                         <group>
                             <field name="target_company_id"/>
                             <field name="target_website_id"/>
-                            <field name="copy_cost"/> </group>
+                            <field name="manual_exchange_rate"
+                                   attrs="{'invisible': [('manual_exchange_rate', '=', 0)]}"/>
+                        </group>
                     </group>
                     <notebook>
                         <page string="Products">

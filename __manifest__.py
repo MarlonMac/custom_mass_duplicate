@@ -4,7 +4,7 @@
     'summary': 'Duplica productos masivamente a otra empresa y sitio web de forma asíncrona.',
     
     'description': """
-Herramienta de Productividad para Multi-Empresa v2.1.0
+Herramienta de Productividad para Multi-Empresa v2.1.1
 =====================================================
 
 Este módulo proporciona una solución robusta para duplicar grandes volúmenes de productos
@@ -12,13 +12,17 @@ de forma masiva y asíncrona entre diferentes empresas.
 
 Características Principales:
 ---------------------------
-* **Procesamiento en Segundo Plano:** Las duplicaciones de lotes grandes se ejecutan como un trabajo en segundo plano para evitar timeouts del servidor y no bloquear la interfaz del usuario.
-* **Monitor de Trabajos:** Incluye una nueva vista para monitorear el estado (Pendiente, En Progreso, Hecho, Fallido) de cada operación de duplicación.
-* **Soporte Multi-Moneda:** Convierte automáticamente los precios de venta y coste si la empresa de destino utiliza una moneda diferente (requiere tasas de cambio configuradas en Odoo).
+* **Procesamiento en Segundo Plano:** Las duplicaciones de lotes grandes se ejecutan como un trabajo en segundo plano para evitar timeouts y no bloquear la interfaz.
+* **Monitor de Trabajos:** Incluye una vista para monitorear el estado (Pendiente, En Progreso, Hecho, Fallido) de cada operación.
+* **Soporte Multi-Moneda Avanzado:**
+    * Convierte automáticamente los precios si la empresa destino usa una moneda diferente.
+    * Muestra la tasa de cambio de Odoo directamente en el asistente.
+    * **Permite establecer una tasa de cambio manual** para la operación.
+* **Copia de Coste Opcional:** El usuario puede decidir si desea copiar el precio de coste de los productos.
 * **Duplicación Completa:** Conserva imágenes, variantes, descripciones y relaciones de productos accesorios y alternativos.
-* **Seguridad Integrada:** La acción está restringida por un grupo de permisos para un control total.
+* **Seguridad Integrada:** La acción está restringida por un grupo de permisos.
 
-**Nota Importante (v2.1.0):** Para garantizar la estabilidad, la duplicación del campo "Productos Opcionales" está desactivada. Estos deben ser reasignados manualmente.
+**Nota Importante (v2.1.1):** La duplicación del campo "Productos Opcionales" sigue desactivada para garantizar la estabilidad.
     """,
     
     'author': 'Marlon Macario',
@@ -28,13 +32,13 @@ Características Principales:
     'license': 'OPL-1',
     
     'category': 'Inventory/Products',
-    'version': '16.0.2.1.0', 
+    'version': '16.0.2.1.1', 
     
     'depends': [
         'product',
         'website',
         'stock',
-        'account', # Necesario para la conversión de moneda
+        'account',
     ],
     'data': [
         'security/mass_duplicate_groups.xml',

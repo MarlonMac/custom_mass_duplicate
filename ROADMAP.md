@@ -8,23 +8,29 @@ Este documento describe la dirección futura y las características planificadas
 
 Re-arquitectura completa del módulo para soportar grandes volúmenes de datos sin timeouts, mediante un sistema de trabajos en segundo plano.
 
-* **Funcionalidad Principal:** Duplicación asíncrona con cola de trabajos y monitor de estado.
-* **Workaround Implementado:** Sigue omitiendo la duplicación de "Productos Opcionales".
+---
+## Versión 2.1.1 - Soporte Multi-Moneda y Correcciones
+**Estado:** Liberado ✔️
+
+Se robusteció el módulo para escenarios de negocio multi-moneda y se mejoró la experiencia de usuario en el asistente de duplicación.
+
+* **Funcionalidad Principal:**
+    * Conversión automática de precios entre diferentes monedas.
+    * Opción para anular la tasa de Odoo con una tasa manual por operación.
+    * Opción para incluir o excluir el precio de coste en la duplicación.
+* **Correcciones (Parches):**
+    * Solucionado `KeyError` al procesar precios de coste.
+    * Solucionado error que impedía abrir el asistente (wizard).
 
 ---
-## Versión 2.1.0 - Soporte Multi-Moneda y UX
+## Versión 2.2.0 - Mejoras de UX para Jobs
 **Estado:** Planificado 📝
 
-El objetivo de esta versión será robustecer el módulo para escenarios de negocio más complejos y mejorar la experiencia de usuario durante el procesamiento de los jobs.
+El objetivo de esta versión será mejorar la monitorización y control de los trabajos de duplicación que ya están en la cola.
 
-* **PRIORIDAD: Soporte Multi-Moneda:**
-    * Detectar si la compañía de origen y destino usan diferentes monedas.
-    * Si las monedas son diferentes, buscar el tipo de cambio configurado en Odoo.
-    * Convertir los campos de precio (Precio de Venta, Coste, etc.) a la nueva moneda durante la duplicación.
+* **Barra de Progreso:** Investigar e implementar un indicador visual en el formulario del job que muestre el progreso en tiempo real (ej. "Procesando producto 45 de 450"). Esto probablemente requerirá el uso del bus de Odoo o polling desde el cliente.
 
-* **Mejoras de UX para Jobs:**
-    * **Barra de Progreso:** Investigar e implementar un indicador visual en el formulario del job que muestre el progreso (ej. "Procesando producto 45 de 450").
-    * **Botón de Cancelación:** Añadir una opción para que un administrador pueda detener un job que esté `Pendiente` o `En Progreso`.
+* **Botón de Cancelación:** Añadir una opción para que un administrador pueda detener un job que esté `Pendiente` o `En Progreso`. Un job cancelado no podrá ser re-encolado y pasará a un estado `cancelled`.
 
 ---
 ## Futuras Mejoras (Sin Versión Asignada)

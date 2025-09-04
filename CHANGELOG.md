@@ -7,38 +7,39 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ---
+## [2.1.1] - 2025-09-04
+
+### Fixed
+- **KeyError en `standard_price`**: Se solucionó un error fatal que ocurría al intentar convertir el precio de coste cuando la opción de copiar coste estaba desactivada.
+- **Error de Vista (attrs)**: Se corrigió un `ValueError: malformed node or string` causado por una sintaxis incorrecta en la vista del wizard, que impedía su apertura.
+
+---
 ## [2.1.0] - 2025-09-04
 
 ### Added
-- **Soporte Multi-Moneda**: El job de duplicación ahora detecta si la compañía de origen y destino tienen monedas diferentes. Si es así, convierte automáticamente los campos `list_price` y `standard_price` usando las tasas de cambio configuradas en Odoo.
-- **Dependencia de Contabilidad**: Se añadió `account` a las dependencias del módulo para acceder a los modelos de moneda.
-- **Manejo de Errores Mejorado**: Si no se encuentra una tasa de cambio, el job fallará con un mensaje claro en el log, indicando al usuario que debe configurar la tasa.
+- **Soporte Multi-Moneda**: El job de duplicación ahora detecta si la compañía de origen y destino tienen monedas diferentes y convierte los precios.
+- **Tasa de Cambio Manual**: Se añadió una opción en el asistente para que el usuario pueda introducir una tasa de cambio manual.
+- **Opción para Copiar Coste**: El usuario ahora puede elegir explícitamente si desea copiar el precio de coste (`standard_price`).
+- **Dependencia de Contabilidad**: Se añadió `account` a las dependencias.
+
+### Changed
+- **UX del Asistente Mejorada**: El asistente ahora muestra la moneda de origen, la de destino y la tasa de cambio que se aplicará, proporcionando mayor claridad al usuario.
 
 ---
 ## [2.0.0] - 2025-09-04
 
 ### Added
-- **Procesamiento Asíncrono**: Se implementó un sistema de cola de trabajos (`product.duplication.job`) para manejar duplicaciones masivas en segundo plano, evitando timeouts del servidor.
-- **Monitor de Trabajos**: Nueva vista en `Inventario > Operaciones > Duplication Jobs` para ver el estado de las duplicaciones.
-- **Tarea Programada (Cron)**: Se añadió un cron que se ejecuta cada minuto para procesar los trabajos pendientes.
-- **Acción para Re-encolar**: Los trabajos fallidos ahora pueden ser re-encolados para un nuevo intento desde la vista del job.
-- **Vista de Lista Personalizada**: La lista de productos dentro del job ahora es simplificada y no muestra columnas de stock para evitar confusiones.
+- **Procesamiento Asíncrono**: Implementación de un sistema de cola de trabajos (`product.duplication.job`).
+- **Monitor de Trabajos**: Nueva vista en `Inventario > Operaciones > Duplication Jobs`.
+- **Tarea Programada (Cron)** para procesar los trabajos pendientes.
+- **Acción para Re-encolar** trabajos fallidos.
 
 ### Changed
-- **Cambio Arquitectónico (MAJOR)**: El proceso de duplicación pasa de ser síncrono (bloqueante) a asíncrono (en segundo plano). El asistente ahora solo crea un job en lugar de realizar el trabajo directamente.
+- **Cambio Arquitectónico (MAJOR)**: El proceso pasa de ser síncrono a asíncrono.
 
 ---
 ## [1.0.0] - 2025-09-04
 
 ### Added
 - Creación Inicial del Módulo y wizard para la duplicación masiva.
-- Lógica de Dos Pasadas para reconstruir relaciones de forma estable.
-- Grupo de permisos "Gestor de Duplicación de Productos" para controlar el acceso.
-
-### Fixed
-- Resueltos errores de permisos multi-empresa utilizando `sudo()`.
-- Corregido `KeyError` al manejar los modelos `product.template` y `product.product`.
-- Solucionados errores de restricción de BD usando el método `copy_data()` + `create()`.
-
-### Changed
-- **Workaround para Productos Opcionales**: Se deshabilitó la duplicación de `optional_product_ids` para garantizar la funcionalidad.
+- Lógica de Dos Pasadas y grupo de permisos "Gestor de Duplicación de Productos".
