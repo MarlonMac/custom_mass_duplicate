@@ -36,6 +36,7 @@ Características Principales:
         'website'
     ],
     'data': [
+        'security/mass_duplicate_groups.xml',
         'security/ir.model.access.csv',
         'views/product_duplicate_wizard_views.xml',
     ],

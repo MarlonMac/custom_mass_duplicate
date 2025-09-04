@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record model="ir.module.category" id="module_category_mass_duplicate">
+            <field name="name">Gestión de Catálogo Personalizada</field>
+            <field name="description">Permisos para las herramientas personalizadas de gestión de catálogo.</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="group_mass_product_duplicator" model="res.groups">
+            <field name="name">Gestor de Duplicación de Productos</field>
+            <field name="category_id" ref="module_category_mass_duplicate"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">
+                Este grupo permite al usuario acceder a la acción de duplicación masiva de productos entre compañías.
+                Debido a que la operación requiere privilegios elevados (sudo), solo asigne este grupo a usuarios de confianza.
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -21,13 +21,6 @@ class ProductDuplicateWizard(models.TransientModel):
     )
 
     def action_duplicate_products(self):
-        """
-        Main method to perform the duplication.
-        It iterates through the selected product.template records and uses
-        the Odoo ORM's copy() method, which is the standard and safe way
-        to duplicate records. It handles the duplication of related fields
-        (like secondary images) automatically.
-        """
         product_template_ids = self.env.context.get('active_ids', [])
         if not product_template_ids:
             raise UserError(_("You must select at least one product to duplicate."))
@@ -35,34 +28,26 @@ class ProductDuplicateWizard(models.TransientModel):
         templates = self.env['product.template'].browse(product_template_ids)
         
         for template in templates:
-            # Prepare the dictionary with values to override in the new copy.
             default_values = {
                 'company_id': self.target_company_id.id,
                 'website_id': self.target_website_id.id,
-                # By not specifying 'name' or 'default_code', we let the copy()
-                # method handle them. We will then update the default_code
-                # of the variants manually to ensure it's preserved.
             }
-            
-            # The copy() method is secure as it runs within the ORM's
-            # access rights framework. It safely duplicates the record
-            # and its related one2many fields (like product_template_image_ids).
-            new_template = template.copy(default_values)
+            # Usamos sudo() para evitar problemas de permisos al copiar a otra compañía.
+            new_template = template.sudo().copy(default_values)
 
-            # Odoo's default copy() might alter the default_code on variants
-            # to avoid unique constraint errors. We will restore them.
             if len(template.product_variant_ids) == len(new_template.product_variant_ids):
                 for i, original_variant in enumerate(template.product_variant_ids):
                     new_variant = new_template.product_variant_ids[i]
-                    # Check if a product with the same internal reference already exists
-                    # in the target company to avoid unique constraint errors.
-                    existing = self.env['product.product'].search([
+                    
+                    # Usamos sudo() de nuevo para la búsqueda y escritura en la otra compañía.
+                    existing = self.env['product.product'].sudo().search([
                         ('default_code', '=', original_variant.default_code),
                         ('company_id', '=', self.target_company_id.id),
                         ('id', '!=', new_variant.id)
                     ], limit=1)
                     
                     if not existing and original_variant.default_code:
-                        new_variant.write({'default_code': original_variant.default_code})
+                        # Actualizamos el código interno solo si no existe en la compañía destino.
+                        new_variant.sudo().write({'default_code': original_variant.default_code})
         
         return {'type': 'ir.actions.act_window_close'}
