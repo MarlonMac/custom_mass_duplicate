@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_product_duplication_job_tree" model="ir.ui.view">
+        <field name="name">product.duplication.job.tree</field>
+        <field name="model">product.duplication.job</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="state == 'done'" decoration-danger="state == 'failed'" decoration-muted="state == 'pending'" decoration-info="state == 'in_progress'">
+                <field name="name"/>
+                <field name="state"/>
+                <field name="user_id"/>
+                <field name="target_company_id"/>
+                <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_product_duplication_job_form" model="ir.ui.view">
+        <field name="name">product.duplication.job.form</field>
+        <field name="model">product.duplication.job</field>
+        <field name="arch" type="xml">
+            <form create="false" edit="false">
+                <header>
+                    <button name="action_requeue" type="object" string="Re-Queue" class="btn-primary" attrs="{'invisible': [('state', '!=', 'failed')]}"/>
+                </header>
+                <sheet>
+                    <h1><field name="name"/></h1>
+                    <group>
+                        <field name="state"/>
+                        <field name="user_id"/>
+                        <field name="target_company_id"/>
+                        <field name="target_website_id"/>
+                    </group>
+                    <notebook>
+                        <page string="Products">
+                            <field name="product_template_ids"/>
+                        </page>
+                        <page string="Error Log" attrs="{'invisible': [('error_log', '=', False)]}">
+                            <field name="error_log" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_product_duplication_job" model="ir.actions.act_window">
+        <field name="name">Duplication Jobs</field>
+        <field name="res_model">product.duplication.job</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_product_duplication_job"
+              name="Duplication Jobs"
+              parent="stock.menu_stock_root"
+              action="action_product_duplication_job"
+              sequence="99"/>
+</odoo>

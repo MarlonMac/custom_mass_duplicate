@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Duplicador Masivo de Productos Multi-Empresa',
-    'summary': 'Duplica productos masivamente a otra empresa y sitio web, conservando imágenes y datos.',
+    'summary': 'Duplica productos masivamente a otra empresa y sitio web de forma asíncrona.',
     
     'description': """
-Herramienta de Productividad para Multi-Empresa
-================================================
+Herramienta de Productividad para Multi-Empresa v2.0.0
+=====================================================
 
-Este módulo proporciona una solución robusta para duplicar productos de forma masiva
-entre diferentes empresas configuradas en su instancia de Odoo 16.
+Este módulo proporciona una solución robusta para duplicar grandes volúmenes de productos
+de forma masiva y asíncrona entre diferentes empresas.
 
 Características Principales:
 ---------------------------
-* **Asistente Intuitivo:** Seleccione productos y elija la empresa/sitio web de destino fácilmente.
+* **Procesamiento en Segundo Plano:** Las duplicaciones de lotes grandes se ejecutan como un trabajo en segundo plano para evitar timeouts del servidor y no bloquear la interfaz del usuario.
+* **Monitor de Trabajos:** Incluye una nueva vista para monitorear el estado (Pendiente, En Progreso, Hecho, Fallido) de cada operación de duplicación.
 * **Duplicación Completa:** Conserva imágenes, variantes, descripciones y relaciones de productos accesorios y alternativos.
-* **Manejo de Conflictos:** Evita errores de base de datos si un producto con la misma Referencia Interna ya existe.
-* **Seguridad Integrada:** Una acción restringida por un grupo de permisos para un control total.
+* **Seguridad Integrada:** La acción está restringida por un grupo de permisos para un control total.
 
-**Nota Importante (v1.0.0):** Para garantizar la estabilidad en todos los entornos, la duplicación del campo "Productos Opcionales" está desactivada. Estos deben ser reasignados manualmente.
+**Nota Importante (v2.0.0):** Para garantizar la estabilidad, la duplicación del campo "Productos Opcionales" está desactivada. Estos deben ser reasignados manualmente.
     """,
     
     'author': 'Marlon Macario',
@@ -27,19 +27,20 @@ Características Principales:
     'license': 'OPL-1',
     
     'category': 'Inventory/Products',
-    'version': '16.0.1.0.0',
+    'version': '16.0.2.0.0',
     
     'depends': [
         'product',
-        'website'
+        'website',
+        'stock',
     ],
     'data': [
         'security/mass_duplicate_groups.xml',
         'security/ir.model.access.csv',
+        'data/ir_cron_data.xml',
+        'views/product_duplication_job_views.xml',
         'views/product_duplicate_wizard_views.xml',
     ],
-    
-    'images': ['static/description/banner.png'],
     
     'installable': True,
     'application': False,

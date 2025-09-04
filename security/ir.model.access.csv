@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_product_duplicate_wizard,product.duplicate.wizard.access,model_product_duplicate_wizard,custom_mass_duplicate.group_mass_product_duplicator,1,1,1,1
+access_product_duplication_job,product.duplication.job.access,model_product_duplication_job,custom_mass_duplicate.group_mass_product_duplicator,1,1,1,0
