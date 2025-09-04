@@ -9,8 +9,19 @@ class ProductDuplicateWizard(models.TransientModel):
     _name = 'product.duplicate.wizard'
     _description = 'Wizard to Mass Duplicate Products to a Company'
 
-    target_company_id = fields.Many2one('res.company', string='Target Company', required=True)
-    target_website_id = fields.Many2one('website', string='Target Website', required=True, domain="[('company_id', '=', target_company_id)]")
+    target_company_id = fields.Many2one(
+        'res.company', 
+        string='Target Company', 
+        required=True,
+        help="The company to which the products will be duplicated."
+    )
+    target_website_id = fields.Many2one(
+        'website', 
+        string='Target Website', 
+        required=True,
+        domain="[('company_id', '=', target_company_id)]",
+        help="The website where the new products will be published."
+    )
 
     def action_duplicate_products(self):
         original_templates = self.env['product.template'].browse(self.env.context.get('active_ids', []))
@@ -22,12 +33,14 @@ class ProductDuplicateWizard(models.TransientModel):
         variant_id_map = {}  # Mapa de {original_variant_id: new_variant_id}
 
         for template in original_templates:
+            # Usamos el comando (6, 0, []) que significa "reemplazar con una lista vacía".
+            # Este es más seguro que (5, 0, 0) y evita conflictos de Foreign Key.
             default_values = {
                 'company_id': self.target_company_id.id,
                 'website_id': self.target_website_id.id,
-                'accessory_product_ids': [(5, 0, 0)],
-                'alternative_product_ids': [(5, 0, 0)],
-                'optional_product_ids': [(5, 0, 0)],
+                'accessory_product_ids': [(6, 0, [])],
+                'alternative_product_ids': [(6, 0, [])],
+                'optional_product_ids': [(6, 0, [])],
             }
             new_template = template.sudo().copy(default_values)
             template_id_map[template.id] = new_template.id
@@ -66,7 +79,7 @@ class ProductDuplicateWizard(models.TransientModel):
                     if alt_tmpl.id in template_id_map:
                         target_alternative_ids.append(template_id_map[alt_tmpl.id])
                     else:
-                        # Fallback a buscar por referencia del template (si existe)
+                        # Fallback a buscar por referencia del template (si existe y es única)
                         if alt_tmpl.default_code:
                             found = ProductTemplate.search([('default_code', '=', alt_tmpl.default_code), ('company_id', '=', self.target_company_id.id)], limit=1)
                             if found:
@@ -77,9 +90,10 @@ class ProductDuplicateWizard(models.TransientModel):
             # --- Mapeo de Accesorios y Opcionales (product.template -> product.product) ---
             m2m_variant_fields = ['accessory_product_ids', 'optional_product_ids']
             for field_name in m2m_variant_fields:
-                if original_template[field_name]:
+                original_variants = original_template.sudo()[field_name]
+                if original_variants:
                     target_variant_ids = []
-                    for original_variant in original_template[field_name]:
+                    for original_variant in original_variants:
                         if original_variant.id in variant_id_map:
                             target_variant_ids.append(variant_id_map[original_variant.id])
                         else:
