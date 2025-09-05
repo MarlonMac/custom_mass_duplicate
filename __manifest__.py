@@ -4,7 +4,7 @@
     'summary': 'Duplica productos masivamente a otra empresa y sitio web de forma asíncrona.',
     
     'description': """
-Herramienta de Productividad para Multi-Empresa v2.2.1
+Herramienta de Productividad para Multi-Empresa v2.2.2
 =====================================================
 
 Este módulo proporciona una solución robusta para duplicar grandes volúmenes de productos
@@ -19,7 +19,7 @@ Características Principales:
     * Permite establecer una tasa de cambio manual, especificando si es un divisor o multiplicador.
 * **Ajuste de Precio de Venta**: Opción para aplicar un margen porcentual al precio de venta en el destino.
 
-**Limitación Conocida (v2.2.1):**
+**Limitación Conocida (v2.2.2):**
 ----------------------------------
 * **Copia de Costo (`standard_price`)**: Existe un problema conocido donde el costo del producto de origen se lee como 0.0 durante el proceso en segundo plano, por lo que no se copia correctamente. Este problema está programado para ser resuelto en la siguiente versión.
 * **Productos Opcionales**: La duplicación de este campo sigue desactivada.
@@ -31,7 +31,7 @@ Características Principales:
     'website': 'https://link-gt.com',
     'license': 'OPL-1',
     'category': 'Inventory/Products',
-    'version': '16.0.2.2.1',
+    'version': '16.0.2.2.2',
     
     'depends': [ 'product', 'website', 'stock', 'account' ],
     'data': [

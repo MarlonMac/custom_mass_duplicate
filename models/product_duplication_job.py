@@ -64,7 +64,7 @@ class ProductDuplicationJob(models.Model):
 
         for template in self.product_template_ids:
             
-            # --- SOLUCIÓN DEFINITIVA: Forzar el contexto de la compañía de origen ---
+            # Determine source company context
             source_company_id = template.company_id.id or self.env.company.id
             source_template_with_context = template.with_context(force_company=source_company_id)
             source_template_sudo = source_template_with_context.sudo()
@@ -91,10 +91,18 @@ class ProductDuplicationJob(models.Model):
                     copy_data['list_price'] = copy_data.get('list_price', 0.0) / rate
                     if 'standard_price' in copy_data:
                         copy_data['standard_price'] /= rate
+                    # --- INICIO DE LA CORRECCIÓN ---
+                    if 'compare_list_price' in copy_data and copy_data['compare_list_price'] > 0:
+                        copy_data['compare_list_price'] /= rate
+                    # --- FIN DE LA CORRECCIÓN ---
                 else: # Multiplier
                     copy_data['list_price'] = copy_data.get('list_price', 0.0) * rate
                     if 'standard_price' in copy_data:
                         copy_data['standard_price'] *= rate
+                    # --- INICIO DE LA CORRECCIÓN ---
+                    if 'compare_list_price' in copy_data and copy_data['compare_list_price'] > 0:
+                        copy_data['compare_list_price'] *= rate
+                    # --- FIN DE LA CORRECCIÓN ---
 
             if self.apply_price_markup and self.price_markup_percent != 0:
                 markup_factor = 1.0 + (self.price_markup_percent / 100.0)
@@ -103,7 +111,8 @@ class ProductDuplicationJob(models.Model):
             
             assert copy_data['company_id'] == self.target_company_id.id, "Security Check Failed"
             _logger.info(f"Job {self.name}: Creando producto duplicado para '{template.name}' con los siguientes datos de precio: "
-                         f"list_price={copy_data.get('list_price')}, standard_price={copy_data.get('standard_price')}")
+                         f"list_price={copy_data.get('list_price')}, standard_price={copy_data.get('standard_price')}, "
+                         f"compare_list_price={copy_data.get('compare_list_price')}")
             
             new_template = self.env['product.template'].sudo().create(copy_data)
             template_id_map[template.id] = new_template.id

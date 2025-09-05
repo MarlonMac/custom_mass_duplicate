@@ -7,6 +7,12 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ---
+## [2.2.2] - 2025-09-05
+
+### Fixed
+- **Conversión de Precio de Comparación**: Se corrigió la lógica de conversión de moneda para que también se aplique al campo "Precio de Comparación" (`compare_list_price`), asegurando la consistencia de precios en el sitio web de destino.
+
+---
 ## [2.2.1] - 2025-09-05
 
 ### Fixed
