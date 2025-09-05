@@ -10,15 +10,18 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [2.2.1] - 2025-09-05
 
 ### Fixed
-- **Error de Redondeo de Tasa de Cambio**: Se corrigió un error crítico donde la tasa de cambio se redondeaba a 2 decimales, causando cálculos de precios incorrectos. La precisión completa de la tasa ahora se mantiene en todo el proceso.
-- **Diagnóstico de "Copiar Costo"**: Se añadió logging detallado para investigar por qué la función de copiar costo podría no estar funcionando como se espera en ciertos escenarios.
+- **Error de Redondeo de Tasa de Cambio**: Se corrigió un error crítico donde la tasa de cambio se redondeaba a 2 decimales. La precisión completa de la tasa ahora se mantiene en todo el proceso.
+- **Error de Cálculo por Contexto**: Se implementó una lógica robusta para pasar la tasa de cambio del wizard al job, evitando inconsistencias causadas por diferencias de contexto entre la sesión del usuario y la del cron.
+
+### Known Issues
+- **Falla en "Copiar Costo"**: A pesar de múltiples intentos, la lectura del campo `standard_price` en el job de segundo plano sigue devolviendo `0.0`, impidiendo que el costo se copie. La resolución de este problema se ha movido a la siguiente versión.
 
 ---
 ## [2.2.0] - 2025-09-05
 
 ### Added
 - **Ajuste de Precio de Venta**: Se añadió una sección en el wizard para aplicar un ajuste porcentual al precio de venta en el destino.
-- **Selección de Tipo de Tasa Manual**: El usuario ahora puede especificar si la tasa de cambio manual es un 'divisor' o un 'multiplicador', eliminando ambigüedad.
+- **Selección de Tipo de Tasa Manual**: El usuario ahora puede especificar si la tasa de cambio manual es un 'divisor' o un 'multiplicador'.
 
 ### Changed
 - **UI del Wizard**: Se reestructuró la sección de conversión de moneda para mayor claridad y se corrigieron problemas de alineación.

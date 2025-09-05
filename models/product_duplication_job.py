@@ -63,14 +63,16 @@ class ProductDuplicationJob(models.Model):
         variant_id_map = {}
 
         for template in self.product_template_ids:
-            # --- SOLUCIÓN: Usar sudo() para leer el template original ---
-            source_template_sudo = template.sudo()
+            
+            # --- SOLUCIÓN DEFINITIVA: Forzar el contexto de la compañía de origen ---
+            source_company_id = template.company_id.id or self.env.company.id
+            source_template_with_context = template.with_context(force_company=source_company_id)
+            source_template_sudo = source_template_with_context.sudo()
             
             copy_data = source_template_sudo.copy_data()[0]
             
             if self.copy_cost:
                 _logger.info(f"Job {self.name}: Opción 'copy_cost' está activa. Copiando coste para '{template.name}'.")
-                # Leemos el coste desde el registro con sudo()
                 cost_price = source_template_sudo.standard_price
                 _logger.info(f"Job {self.name}: Coste original (standard_price) de '{template.name}' es: {cost_price}")
                 copy_data['standard_price'] = cost_price

@@ -4,7 +4,7 @@
     'summary': 'Duplica productos masivamente a otra empresa y sitio web de forma asíncrona.',
     
     'description': """
-Herramienta de Productividad para Multi-Empresa v2.1.1
+Herramienta de Productividad para Multi-Empresa v2.2.1
 =====================================================
 
 Este módulo proporciona una solución robusta para duplicar grandes volúmenes de productos
@@ -12,17 +12,17 @@ de forma masiva y asíncrona entre diferentes empresas.
 
 Características Principales:
 ---------------------------
-* **Procesamiento en Segundo Plano:** Las duplicaciones de lotes grandes se ejecutan como un trabajo en segundo plano para evitar timeouts y no bloquear la interfaz.
-* **Monitor de Trabajos:** Incluye una vista para monitorear el estado (Pendiente, En Progreso, Hecho, Fallido) de cada operación.
-* **Soporte Multi-Moneda Avanzado:**
-    * Convierte automáticamente los precios si la empresa destino usa una moneda diferente.
-    * Muestra la tasa de cambio de Odoo directamente en el asistente.
-    * **Permite establecer una tasa de cambio manual** para la operación.
-* **Copia de Coste Opcional:** El usuario puede decidir si desea copiar el precio de coste de los productos.
-* **Duplicación Completa:** Conserva imágenes, variantes, descripciones y relaciones de productos accesorios y alternativos.
-* **Seguridad Integrada:** La acción está restringida por un grupo de permisos.
+* **Cálculo de Precios Preciso**: Realiza la conversión de moneda y los ajustes de precio de venta con alta precisión decimal.
+* **Procesamiento en Segundo Plano**: Evita timeouts del servidor al procesar grandes lotes.
+* **Soporte Multi-Moneda Avanzado**:
+    * Muestra la tasa de cambio de Odoo en el asistente.
+    * Permite establecer una tasa de cambio manual, especificando si es un divisor o multiplicador.
+* **Ajuste de Precio de Venta**: Opción para aplicar un margen porcentual al precio de venta en el destino.
 
-**Nota Importante (v2.1.1):** La duplicación del campo "Productos Opcionales" sigue desactivada para garantizar la estabilidad.
+**Limitación Conocida (v2.2.1):**
+----------------------------------
+* **Copia de Costo (`standard_price`)**: Existe un problema conocido donde el costo del producto de origen se lee como 0.0 durante el proceso en segundo plano, por lo que no se copia correctamente. Este problema está programado para ser resuelto en la siguiente versión.
+* **Productos Opcionales**: La duplicación de este campo sigue desactivada.
     """,
     
     'author': 'Marlon Macario',
@@ -30,16 +30,10 @@ Características Principales:
     'company': 'Link GT',
     'website': 'https://link-gt.com',
     'license': 'OPL-1',
-    
     'category': 'Inventory/Products',
-    'version': '16.0.2.2.1', 
+    'version': '16.0.2.2.1',
     
-    'depends': [
-        'product',
-        'website',
-        'stock',
-        'account',
-    ],
+    'depends': [ 'product', 'website', 'stock', 'account' ],
     'data': [
         'security/mass_duplicate_groups.xml',
         'security/ir.model.access.csv',
