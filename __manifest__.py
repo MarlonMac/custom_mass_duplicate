@@ -32,7 +32,7 @@ Características Principales:
     'license': 'OPL-1',
     
     'category': 'Inventory/Products',
-    'version': '16.0.2.1.1', 
+    'version': '16.0.2.2.1', 
     
     'depends': [
         'product',

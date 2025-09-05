@@ -7,6 +7,23 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ---
+## [2.2.1] - 2025-09-05
+
+### Fixed
+- **Error de Redondeo de Tasa de Cambio**: Se corrigió un error crítico donde la tasa de cambio se redondeaba a 2 decimales, causando cálculos de precios incorrectos. La precisión completa de la tasa ahora se mantiene en todo el proceso.
+- **Diagnóstico de "Copiar Costo"**: Se añadió logging detallado para investigar por qué la función de copiar costo podría no estar funcionando como se espera en ciertos escenarios.
+
+---
+## [2.2.0] - 2025-09-05
+
+### Added
+- **Ajuste de Precio de Venta**: Se añadió una sección en el wizard para aplicar un ajuste porcentual al precio de venta en el destino.
+- **Selección de Tipo de Tasa Manual**: El usuario ahora puede especificar si la tasa de cambio manual es un 'divisor' o un 'multiplicador', eliminando ambigüedad.
+
+### Changed
+- **UI del Wizard**: Se reestructuró la sección de conversión de moneda para mayor claridad y se corrigieron problemas de alineación.
+
+---
 ## [2.1.1] - 2025-09-04
 
 ### Fixed

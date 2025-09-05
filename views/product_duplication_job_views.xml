@@ -33,9 +33,14 @@
                         <group>
                             <field name="target_company_id"/>
                             <field name="target_website_id"/>
-                            <field name="manual_exchange_rate"
-                                   attrs="{'invisible': [('manual_exchange_rate', '=', 0)]}"/>
+                            <field name="apply_price_markup"/>
+                            <field name="price_markup_percent"
+                                   attrs="{'invisible': [('apply_price_markup', '=', False)]}"/>
                         </group>
+                    </group>
+                    <group string="Currency Conversion Details" attrs="{'invisible': [('exchange_rate_to_use', '=', 0)]}">
+                        <field name="exchange_rate_to_use" options="{'digits': [16, 10]}"/>
+                        <field name="rate_type"/>
                     </group>
                     <notebook>
                         <page string="Products">

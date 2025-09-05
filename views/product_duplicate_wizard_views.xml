@@ -11,26 +11,28 @@
                         <field name="target_company_id"/>
                         <field name="target_website_id"/>
                         <field name="copy_cost"/>
-                        <field name="conversion_needed" invisible="1"/>
                     </group>
-                    <group string="Currency Conversion" name="currency_info"
-                           attrs="{'invisible': [('conversion_needed', '=', False)]}">
-                        <field name="source_currency_id" readonly="1" force_save="1"/>
-                        <field name="target_currency_id" readonly="1" force_save="1"/>
-                        
-                        <field name="rate_display" nolabel="1"/>
-                        
-                        <field name="use_manual_rate"/>
-                        
-                        <div class="o_row" 
-                             attrs="{'invisible': [('use_manual_rate', '=', False)]}">
-                            <field name="manual_rate_label" class="oe_inline"/>
-                            <field name="manual_rate" class="oe_inline" nolabel="1"
-                                   attrs="{'required': [('use_manual_rate', '=', True)]}"/>
-                            <field name="target_currency_id" class="oe_inline" readonly="1" nolabel="1"/>
-                        </div>
+                    <group>
+                        <separator string="Sale Price Adjustment"/>
+                        <field name="apply_price_markup"/>
+                        <field name="price_markup_percent"
+                               attrs="{'invisible': [('apply_price_markup', '=', False)], 'required': [('apply_price_markup', '=', True)]}"/>
                     </group>
                 </group>
+                
+                <group string="Currency Conversion" name="currency_info"
+                       attrs="{'invisible': [('conversion_needed', '=', False)]}">
+                    <field name="conversion_needed" invisible="1"/>
+                    <field name="rate_display" colspan="2"/>
+                    
+                    <field name="use_manual_rate" colspan="2"/>
+                    
+                    <field name="manual_rate_type" widget="radio" nolabel="1"
+                           attrs="{'invisible': [('use_manual_rate', '=', False)]}"/>
+                    <field name="manual_rate"
+                           attrs="{'invisible': [('use_manual_rate', '=', False)], 'required': [('use_manual_rate', '=', True)]}"/>
+                </group>
+                
                 <footer>
                     <button name="action_duplicate_products" string="Duplicate" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
